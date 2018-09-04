@@ -1,3 +1,8 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.13]
 
-* TODO: Describe initial release.
+- Support tag search.
+- Support category search.
+- Support word search.
+
+## [0.0.11] - Release
+
