@@ -21,6 +21,12 @@ abstract class LiveService {
   Future<List<Live>> getRecommendedLives();
 
   Future<List<Live>> getNewLives();
+
+  Future<List<Live>> findByTag(String tag);
+
+  Future<List<Live>> findByWord(String word);
+
+  Future<List<Live>> findByCategory(String category);
 }
 
 class _LiveServiceImpl implements LiveService {
@@ -47,9 +53,34 @@ class _LiveServiceImpl implements LiveService {
     return _findLives("new");
   }
 
-  Future<List<Live>> _findLives(String type) async {
-    final response = await client
-        ._get("$_endPoint/search/lives?limit=100&type=$type&lang=ja");
+  @override
+  Future<List<Live>> findByTag(String tag) {
+    return _findLives("tag", context: tag);
+  }
+
+  @override
+  Future<List<Live>> findByWord(String word) {
+    return _findLives("word", context: word);
+  }
+
+  @override
+  Future<List<Live>> findByCategory(String category) {
+    return _findLives("category", context: category);
+  }
+
+  Future<List<Live>> _findLives(String type, {String context}) async {
+    final url = () {
+      final sb = StringBuffer(_endPoint)
+        ..write("/search/lives?limit=100&type=")
+        ..write(type)
+        ..write("&lang=ja");
+      if (context != null) {
+        sb.write("&context=");
+        sb.write(context);
+      }
+      return sb.toString();
+    }();
+    final response = await client._get(url);
     final body = json.decode(response.body);
     return (body["movies"] as List<dynamic>).map<Live>((m) {
       final movie = Movie.fromJson(m["movie"]);
